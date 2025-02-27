@@ -2,11 +2,15 @@ package com.example.yogademoapp;
 
 import android.annotation.SuppressLint;
 import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.graphics.Insets;
@@ -61,8 +65,45 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.main,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@NonNull MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.id_privacy) {
 
 
+
+            return true;
+        }
+
+        if (id == R.id.id_term) {
+
+
+            return true;
+
+        }
+        if (id == R.id.id_rate) {
+
+            return true;
+        }
+
+        if (id == R.id.id_more) {
+
+
+            return true;
+        }
+
+        if (id == R.id.id_share) {
+
+            return true;
+        }
+        return false;
+    }
 
     public void beforeage18(View view) {
 

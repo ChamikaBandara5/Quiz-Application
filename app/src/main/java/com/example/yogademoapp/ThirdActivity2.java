@@ -1,24 +1,169 @@
 package com.example.yogademoapp;
 
+import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.CountDownTimer;
+import android.view.View;
+import android.widget.Button;
+import android.widget.TextView;
+import android.widget.Toast;
 
-import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.core.graphics.Insets;
-import androidx.core.view.ViewCompat;
-import androidx.core.view.WindowInsetsCompat;
+
+import java.util.Locale;
 
 public class ThirdActivity2 extends AppCompatActivity {
 
+    String buttonvalue;
+    Button startBtn;
+    private CountDownTimer countDownTimer;
+    TextView mtextview;
+    private boolean MTimeRunning;
+    private long MTimeLeftinmills;
+
+    @SuppressLint("MissingInflatedId")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        EdgeToEdge.enable(this);
-        setContentView(R.layout.activity_third2);
-        ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main), (v, insets) -> {
-            Insets systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars());
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom);
-            return insets;
+
+        Intent intent = getIntent();
+        buttonvalue = intent.getStringExtra("value");
+
+        int intvalue = Integer.parseInt(buttonvalue);
+
+        switch (intvalue) {
+            case 1:
+                setContentView(R.layout.activity_bow2);
+                break;
+            case 2:
+                setContentView(R.layout.activity_bridge2);
+                break;
+            case 3:
+                setContentView(R.layout.activity_chair2);
+                break;
+            case 4:
+                setContentView(R.layout.activity_child2);
+                break;
+            case 5:
+                setContentView(R.layout.activity_cobbler2);
+                break;
+            case 6:
+                setContentView(R.layout.activity_cow2);
+                break;
+            case 7:
+                setContentView(R.layout.activity_playji2);
+                break;
+            case 8:
+                setContentView(R.layout.activity_pauseji2);
+                break;
+            case 9:
+                setContentView(R.layout.activity_plank2);
+                break;
+            case 10:
+                setContentView(R.layout.activity_crunches2);
+                break;
+            case 11:
+                setContentView(R.layout.activity_situp2);
+                break;
+            case 12:
+                setContentView(R.layout.activity_rotation2);
+                break;
+            case 13:
+                setContentView(R.layout.activity_twisht2);
+                break;
+            case 14:
+                setContentView(R.layout.activity_windmill2);
+                break;
+            case 15:
+                setContentView(R.layout.activity_legup2);
+                break;
+        }
+
+        // Initialize views after setting the layout
+        startBtn = findViewById(R.id.startbutton);
+        mtextview = findViewById(R.id.time);
+
+        // Check if startBtn and mtextview exist in the layout
+        if (startBtn == null || mtextview == null) {
+            Toast.makeText(this, "Missing startbutton or time TextView in layout for value: " + intvalue, Toast.LENGTH_LONG).show();
+            return;
+        }
+
+        startBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (MTimeRunning) {
+                    stopTimer();
+                } else {
+                    startTimer();
+                }
+            }
         });
+    }
+
+    private void stopTimer() {
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
+        MTimeRunning = false;
+        startBtn.setText("START");
+    }
+
+    private void startTimer() {
+        try {
+            String timeText = mtextview.getText().toString();
+            String[] parts = timeText.split(":");
+            if (parts.length != 2) {
+                throw new IllegalArgumentException("Time format is incorrect. Use MM:SS");
+            }
+
+            int minutes = Integer.parseInt(parts[0]);
+            int seconds = Integer.parseInt(parts[1]);
+
+            int number = minutes * 60 + seconds;
+            MTimeLeftinmills = number * 1000;
+
+            countDownTimer = new CountDownTimer(MTimeLeftinmills, 1000) {
+                @Override
+                public void onTick(long millisUntilFinished) {
+                    MTimeLeftinmills = millisUntilFinished;
+                    updateTimer();
+                }
+
+                @Override
+                public void onFinish() {
+                    int newvalue = Integer.parseInt(buttonvalue) + 1;
+                    if (newvalue > 15) {
+                        newvalue = 1;
+                    }
+                    Intent intent = new Intent(ThirdActivity2.this, ThirdActivity2.class);
+                    intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+                    intent.putExtra("value", String.valueOf(newvalue));
+                    startActivity(intent);
+                }
+            }.start();
+
+            startBtn.setText("Pause");
+            MTimeRunning = true;
+        } catch (Exception e) {
+            Toast.makeText(this, "Invalid time format. Use MM:SS", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void updateTimer() {
+        int minutes = (int) (MTimeLeftinmills / 60000);
+        int seconds = (int) (MTimeLeftinmills % 60000 / 1000);
+
+        String timeLeftText = String.format(Locale.getDefault(), "%02d:%02d", minutes, seconds);
+        mtextview.setText(timeLeftText);
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        if (countDownTimer != null) {
+            countDownTimer.cancel();
+        }
     }
 }
